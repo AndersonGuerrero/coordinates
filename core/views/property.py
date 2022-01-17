@@ -29,6 +29,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
         # podriamos filtrar por la ubicación del houmer..
         properties = Property.objects.all()
         properties_visited = []
+        propertie_visited = None
         for p in properties:
             visit_time = 0
             times = 0
@@ -66,11 +67,12 @@ class PropertyViewSet(viewsets.ModelViewSet):
                     t = loc.created_at - visit_time
                     times = round(t.seconds / 60)
                     visit_time = 0
-            data = self.serializer_class(
-                propertie_visited
-            ).data
-            data.update({'visiting_time': times if times else 'on property'})
-            properties_visited.append(data)
+            if propertie_visited:
+                data = self.serializer_class(
+                    propertie_visited
+                ).data
+                data.update({'visiting_time': times if times else 'on property'})
+                properties_visited.append(data)
         return Response(
             properties_visited,
             status=status.HTTP_200_OK
